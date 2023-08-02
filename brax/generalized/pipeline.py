@@ -69,7 +69,11 @@ def step(
   # calculate acceleration terms
   tau = actuator.to_tau(sys, act, state.q, state.qd)
   state = state.replace(qf_smooth=dynamics.forward(sys, state, tau))
-  state = state.replace(qf_constraint=constraint.force(sys, state))
+  
+  # Create dummy input to allow for custom_jvp:
+  b = state.con_jac @ state.mass_mx_inv @ state.qf_smooth - state.con_aref
+  dummy_input = jp.zeros_like(b)
+  state = state.replace(qf_constraint=constraint.force(dummy_input, sys, state))
 
   # update position/velocity level terms
   state = integrator.integrate(sys, state)
