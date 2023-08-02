@@ -14,7 +14,6 @@
 
 # pylint:disable=g-multiple-import
 """Physics pipeline for generalized coordinates engine."""
-from typing import Any
 
 from brax import actuator
 from brax import geometry
@@ -54,16 +53,11 @@ def init(
 
 
 def step(
-  argument_diff: Any,
-  sys: System, 
-  state: State, 
-  act: jp.ndarray, 
-  debug: bool = False
+    sys: System, state: State, act: jp.ndarray, debug: bool = False
 ) -> State:
   """Performs a physics step.
 
   Args:
-    arguement_diff: differentiate w.r.t to this
     sys: a brax system
     state: physics state prior to step
     act: (act_size,) actuator input vector
@@ -75,7 +69,11 @@ def step(
   # calculate acceleration terms
   tau = actuator.to_tau(sys, act, state.q, state.qd)
   state = state.replace(qf_smooth=dynamics.forward(sys, state, tau))
-  state = state.replace(qf_constraint=constraint.force(argument_diff, sys, state))
+  
+  # Create dummy input to allow for custom_jvp:
+  b = state.con_jac @ state.mass_mx_inv @ state.qf_smooth - state.con_aref
+  dummy_input = jp.zeros_like(b)
+  state = state.replace(qf_constraint=constraint.force(dummy_input, sys, state))
 
   # update position/velocity level terms
   state = integrator.integrate(sys, state)
