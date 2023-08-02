@@ -115,7 +115,6 @@ class PipelineEnv(Env):
 
   def pipeline_step(
     self,
-    argument_diff: Any,
     pipeline_state: Any, 
     action: jp.ndarray,
   ) -> base.State:
@@ -123,7 +122,7 @@ class PipelineEnv(Env):
 
     def f(state, _):
       return (
-          self._pipeline.step(self.sys, argument_diff, state, action, self._debug),
+          self._pipeline.step(self.sys, state, action, self._debug),
           None,
       )
 
