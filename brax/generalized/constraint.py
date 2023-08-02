@@ -240,13 +240,13 @@ def force(
         prox_func,
         maxiter=sys.solver_iterations,
         maxls=sys.solver_maxls,
-        implicit_diff=False,
+        implicit_diff=True,
     )
     qf_constraint = state.con_jac.T @ pg.run(input).params
     return qf_constraint
     
   input = jp.zeros_like(b)
-  qf_constraint = jax.lax.stop_gradient(solve(input))
+  qf_constraint = solve(input)
 
   return qf_constraint
 
