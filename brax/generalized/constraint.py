@@ -227,16 +227,13 @@ def force(sys: System, state: State) -> jp.ndarray:
   # fairly sparse.  perhaps worth trying some kind of random or
   # learned projection to solve a smaller dense matrix at each step
 
-  def solve(input: jax.Array) -> jp.ndarray:
-    prox_func = jaxopt.prox.make_prox_from_projection(
-        jaxopt.projection.project_non_negative
-    )
+  def solve(input):
     pg = jaxopt.ProjectedGradient(
         objective,
-        prox_func,
+        jaxopt.projection.projection_non_negative,
         maxiter=sys.solver_iterations,
-        maxls=sys.solver_maxls,
         implicit_diff=True,
+        maxls=sys.solver_maxls,
     )
     qf_constraint = state.con_jac.T @ pg.run(input).params
     return qf_constraint
