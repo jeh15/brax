@@ -241,6 +241,7 @@ def force(input: jax.Array, sys: System, state: State) -> jp.ndarray:
     qf_constraint = state.con_jac.T @ pg.run(input).params
     return qf_constraint
 
+  print(f'b shape: {jp.zeros_like(b).shape}')
   qf_constraint = solve(input)
 
   return qf_constraint
