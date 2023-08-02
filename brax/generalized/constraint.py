@@ -226,15 +226,21 @@ def force(sys: System, state: State) -> jp.ndarray:
   # another avenue worth pursuing is that these A matrices are often
   # fairly sparse.  perhaps worth trying some kind of random or
   # learned projection to solve a smaller dense matrix at each step
-  pg = jaxopt.ProjectedGradient(
-      objective,
-      jaxopt.projection.projection_non_negative,
-      maxiter=sys.solver_iterations,
-      implicit_diff=False,
-      maxls=sys.solver_maxls,
-  )
-
-  # solve and convert back to q coordinates
-  qf_constraint = state.con_jac.T @ pg.run(jp.zeros_like(b)).params
+  def solve(input: jax.Array) -> jp.ndarray:
+    prox_func = jaxopt.prox.make_prox_from_projection(
+        jaxopt.projection.projection_non_negative
+    )
+    pg = jaxopt.ProjectedGradient(
+        objective,
+        prox_func,
+        maxiter=sys.solver_iterations,
+        maxls=sys.solver_maxls,
+        implicit_diff=False,
+    )
+    qf_constraint = state.con_jac.T @ pg.run(input).params
+    return qf_constraint
+    
+  input = jp.zeros_like(b)
+  qf_constraint = jax.lax.stop_gradient(solve(input)) 
 
   return qf_constraint
