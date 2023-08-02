@@ -114,13 +114,16 @@ class PipelineEnv(Env):
     return self._pipeline.init(self.sys, q, qd, self._debug)
 
   def pipeline_step(
-      self, pipeline_state: Any, action: jp.ndarray
+    self,
+    argument_diff: Any,
+    pipeline_state: Any, 
+    action: jp.ndarray,
   ) -> base.State:
     """Takes a physics step using the physics pipeline."""
 
     def f(state, _):
       return (
-          self._pipeline.step(self.sys, state, action, self._debug),
+          self._pipeline.step(self.sys, argument_diff, state, action, self._debug),
           None,
       )
 

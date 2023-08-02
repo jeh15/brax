@@ -191,7 +191,11 @@ def jacobian(sys: System, state: State) -> State:
   return state.replace(con_jac=jac, con_diag=diag, con_aref=aref)
 
 
-def force(input: jax.Array, sys: System, state: State) -> jp.ndarray:
+def force(
+  argument_diff: jax.Array, 
+  sys: System, 
+  state: State,
+) -> jp.ndarray:
   """Calculates forces that satisfy joint, collision constraints.
 
   Args:
@@ -240,7 +244,8 @@ def force(input: jax.Array, sys: System, state: State) -> jp.ndarray:
     )
     qf_constraint = state.con_jac.T @ pg.run(input).params
     return qf_constraint
-
+    
+  input = jp.zeros_like(b)
   qf_constraint = solve(input)
 
   return qf_constraint
