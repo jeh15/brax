@@ -229,7 +229,7 @@ def force(sys: System, state: State) -> jp.ndarray:
 
   def solve(input: jax.Array) -> jp.ndarray:
     prox_func = jaxopt.prox.make_prox_from_projection(
-        jaxopt.projection.projection_non_negative
+        jaxopt.projection.project_non_negative
     )
     pg = jaxopt.ProjectedGradient(
         objective,
