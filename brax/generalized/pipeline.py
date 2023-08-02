@@ -54,6 +54,7 @@ def init(
 
 
 def step(
+  argument_diff: Any,
   sys: System, 
   state: State, 
   act: jp.ndarray, 
@@ -74,7 +75,7 @@ def step(
   # calculate acceleration terms
   tau = actuator.to_tau(sys, act, state.q, state.qd)
   state = state.replace(qf_smooth=dynamics.forward(sys, state, tau))
-  state = state.replace(qf_constraint=constraint.force(None, sys, state))
+  state = state.replace(qf_constraint=constraint.force(argument_diff, sys, state))
 
   # update position/velocity level terms
   state = integrator.integrate(sys, state)
