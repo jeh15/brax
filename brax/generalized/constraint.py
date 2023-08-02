@@ -230,7 +230,7 @@ def force(sys: System, state: State) -> jp.ndarray:
       objective,
       jaxopt.projection.projection_non_negative,
       maxiter=sys.solver_iterations,
-      implicit_diff=True,
+      implicit_diff=False,
       maxls=sys.solver_maxls,
   )
 
