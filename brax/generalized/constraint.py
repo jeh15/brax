@@ -241,6 +241,6 @@ def force(sys: System, state: State) -> jp.ndarray:
     return qf_constraint
     
   input = jp.zeros_like(b)
-  qf_constraint = jax.lax.stop_gradient(solve(input)) 
+  qf_constraint = solve(input) 
 
   return qf_constraint
